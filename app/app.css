@@ -28,3 +28,29 @@
   content: "";
   padding: 0;
 }
+
+body {
+    font:courier, monospace;
+    font-size: 10px;
+}
+
+tr.todo {
+    background-color: #ffcccc;
+}
+
+tr.processing {
+    background-color: #ccccff;
+}
+
+tr.done {
+    background-color: #ccffcc;
+}
+
+
+td.url {
+    width:400px;
+}
+
+td.add {
+    width:100px;
+}

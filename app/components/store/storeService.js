@@ -67,6 +67,13 @@
         return getJobsWith(sortedJobs, function(job) {return job.urlsTodo;});
     };
 
+    this.getCountUrlsProcessing = function() {
+        return _.reduce(jobs, function(result, job) {
+            result=result+job.urlsProcessing.length;
+            return result;
+        }, 0)
+    };
+
     this.getFirstTodoUrl = function() {
         var jobsWithUrlsTodo=this.getJobsWithUrlsTodo();
         if (jobsWithUrlsTodo.length <= 0) {
@@ -130,7 +137,8 @@ function JobManager() {
     };
 
     this.getUrl = function() {
-        return jobStore.getFirstTodoUrl().url;
+        var f= jobStore.getFirstTodoUrl();
+        if (f) return f.url;
     };
 
     this.moveUrl = function(url) {
@@ -149,86 +157,58 @@ function JobManager() {
         if (job) {
             job.missing=count;
         }
+    };
 
+    this.getJobStore = function() {
+        return jobStore;
     }
 }
 
-var jm= new JobManager();
-/*
-jm.addUrl("a");
-jm.addUrl("a");
-jm.addUrl("b");
-jm.addUrl("c","a");
-jm.addUrl("c","a");
-jm.addUrl("c","b");
-jm.addUrl("c","b");
-jm.addUrl("d","c");
-jm.addUrl("e","b");
 
-jm.addUrl("d");
-jm.addUrl("f","g");
-jm.setMissing(2,"a")
-jm.setMissing(-1,"e")
-jm.getUrl();
-jm.printInfo();
-jm.getUrl();
-jm.getUrl();
-jm.getUrl();
-jm.getUrl();
-jm.getUrl();
-jm.moveUrl("a");
-jm.moveUrl("a");
-jm.addUrl("a");
- */
+var storeService=angular.module('storeService',[]);
 
-/*
-var l1 = function(jobStore) {
+storeService.factory('fetchService', ['$timeout',function($timeout) {
+    this.load = function (url, callback) {
+        console.log("loading", url);
+        $timeout(function () {
+            callback(url)
+        }, 2000);
+    };
+    return {load: this.load}
+}]);
 
-    var jobs=jobStore.listJobs();
-    _.each(jobs, function(job) {
-        console.log('--- JOB:', job.getId());
-        console.log('todo:           ',job.urlsTodo.toString());
-        console.log('processing:     ',job.urlsProcessing.toString());
-        console.log('done:           ',job.urlsDone.toString());
-     });
-};
+ storeService.factory('loadManager', ['$timeout', 'fetchService', function($timeout, fetchService) {
+    var jm= new JobManager();
+    var lm=this;
 
-var l2 = function(jobStore) {
-    console.log("---+++");
-    var jobsWithUrlsTodo=jobStore.getJobsWithUrlsTodo();
-    _.each(jobsWithUrlsTodo, function(job) {
-        console.log(job.listUrls());
-    });
-};
+    this.addUrl = function(url,refUrl) {
+        console.log('addUrl', url);
+        jm.addUrl(url,refUrl);
+        lm.loop();
+    };
 
-js1= new JobStore();
-j1 = js1.createJob("test1");
-j2 = js1.createJob("test2");
-js1.addUrlToJob(j2,"test3");
-j2.missing=+2;
-l1(js1);
-todo=js1.getFirstTodoUrl();
-console.log("TODO1",todo.url, todo.job);
-l1(js1);
-js1.moveUrlToDone(todo.job, todo.url);
-l1(js1);
-todo=js1.getFirstTodoUrl();
-console.log("TODO2",todo.url, todo.job);
-l1(js1);
-js1.moveUrlToDone(todo.job, todo.url);
-l1(js1);
-todo=js1.getFirstTodoUrl();
-console.log("TODO3",todo.url, todo.job);
-l1(js1);
-js1.moveUrlToDone(todo.job, todo.url);
-l1(js1);
-console.log(4);
-l1(js1);
+    this.getJobStore = function() {
+        return jm.getJobStore();
+    };
+    this.loop = function() {
+        var numProcessing=jm.getJobStore().getCountUrlsProcessing();
+        console.log('numProcessing', numProcessing);
+        if (numProcessing<1) {
+            var url=jm.getUrl();
+            if (url) {
+                console.log('start', url);
+                fetchService.load(url, function (urlDone) {
+                    console.log('loaded', urlDone);
+                    jm.moveUrl(url);
+                    lm.loop();
+                })
+            }
+        }
+    };
 
-console.log(js1.getJobs())
-console.log(js1.getJobs()[0].addUrl("b"))
-console.log(js1.getJobs()[0].urlsDone)
-console.log(js1)
-console.log(js1.getUrlMap())
-console.log(JSON.stringify(js1.getUrlMap()))
-*/
+
+     return {
+     addUrl:this.addUrl, getJobStore:this.getJobStore
+     }
+ }]);
+

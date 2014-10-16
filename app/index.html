@@ -15,29 +15,47 @@
   <script src="bower_components/html5-boilerplate/js/vendor/modernizr-2.6.2.min.js"></script>
 </head>
 <body>
-  <ul class="menu">
-    <li><a href="#/view1">view1</a></li>
-    <li><a href="#/view2">view2</a></li>
-  </ul>
-
-  <!--[if lt IE 7]>
-      <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-  <![endif]-->
-
   <div ng-view></div>
-
-  <div>Angular seed app: v<span app-version></span></div>
-
-  <!-- In production use:
-  <script src="//ajax.googleapis.com/ajax/libs/angularjs/x.x.x/angular.min.js"></script>
-  -->
   <script src="bower_components/angular/angular.js"></script>
-  <script src="bower_components/angular-route/angular-route.js"></script>
+  <script src="bower_components/underscore/underscore.js"></script>
   <script src="app.js"></script>
-  <script src="view1/view1.js"></script>
-  <script src="view2/view2.js"></script>
-  <script src="components/version/version.js"></script>
-  <script src="components/version/version-directive.js"></script>
-  <script src="components/version/interpolate-filter.js"></script>
+  <script src="components/store/storeService.js"></script>
+  <script src="components/store/storeCtrl.js"></script>
+<div ng-controller="storeController as s">
+    <div ng-click="s.addUrl();">
+        test
+    </div>
+    <div>
+
+        <div>
+            <span ng-click="s.addRandUrl(0)">Add</span>
+        </div>
+        <div>
+            <span ng-click="s.getUrl()">Get</span>
+            {{furl}}
+        </div>
+
+
+        <div ng-repeat="job in jobStore.getJobs()">
+            JOB: {{job.getId()}}
+            <table class="job">
+                <tr class="todo" ng-repeat="url in job.urlsTodo">
+                    <td class="url">{{url}}</td><td class="add"> <span ng-click="s.addRandUrl(url)">Add</span></td>
+                </tr>
+                <tr class="processing" ng-repeat="url in job.urlsProcessing">
+                    <td class="url">{{url}}</td><td class="add"> <span ng-click="s.addRandUrl(url)">Add</span> </td><td class="add">  <span ng-click="s.moveUrl(url)">Done</span></td>
+                </tr>
+                <tr  class="done" ng-repeat="url in job.urlsDone">
+                    <td class="url">{{url}}</td><td class="add"> <span ng-click="s.addRandUrl(url)">Add</span> </td>
+                </tr>
+            </table>
+        </div>
+
+        <div>
+            <span ng-click="s.loop()">Loop</span>
+        </div>
+
+    </div>
+</div>
 </body>
 </html>
