@@ -1,5 +1,4 @@
  function JobStore() {
-
     var Job = function(id, mainUrl) {
         var urls = [];
         this.urlsTodo = [];
@@ -167,17 +166,7 @@ function JobManager() {
 
 var storeService=angular.module('storeService',[]);
 
-storeService.factory('fetchService', ['$timeout',function($timeout) {
-    this.load = function (url, callback) {
-        console.log("loading", url);
-        $timeout(function () {
-            callback(url)
-        }, 2000);
-    };
-    return {load: this.load}
-}]);
-
- storeService.factory('loadManager', ['$timeout', 'fetchService', function($timeout, fetchService) {
+ storeService.factory('loadService', ['$timeout', 'fetchService', function($timeout, fetchService) {
     var jm= new JobManager();
     var lm=this;
 
@@ -190,6 +179,7 @@ storeService.factory('fetchService', ['$timeout',function($timeout) {
     this.getJobStore = function() {
         return jm.getJobStore();
     };
+
     this.loop = function() {
         var numProcessing=jm.getJobStore().getCountUrlsProcessing();
         console.log('numProcessing', numProcessing);
