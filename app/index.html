@@ -24,9 +24,16 @@
     <script src="components/fetch/fetchServices.js"></script>
     <script src="components/store/storeService.js"></script>
     <script src="components/store/storeCtrl.js"></script>
+    <script src="components/data/dataServices.js"></script>
 
     <div ng-controller="fetchController">
         FETCH
+    </div>
+    <div ng-controller="dataController as data">
+
+        <div>
+            <span ng-click="data.addEntry()">AddMe   DATA   DATA</span>
+        </div>
     </div>
     <div ng-controller="storeController as s">
 

@@ -4,5 +4,7 @@
 angular.module('myApp', [
 'storeCtrl',
     'storeService',
-    'fetchServices'
+    'fetchServices',
+    'dataServices','angular-data.DSCacheFactory',
+    'angular-data.DS'
 ])
